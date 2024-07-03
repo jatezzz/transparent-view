@@ -7,8 +7,26 @@ class CustomView: NSView {
     private let imageButton = NSButton()
     private var initialLocation: NSPoint?
 
+    private let minWidth: CGFloat = 200.0
+    private let minHeight: CGFloat = 200.0
+
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+
+        // Configure and add image view first
+        imageView.frame = self.bounds
+        imageView.autoresizingMask = [.width, .height]
+        imageView.imageScaling = .scaleProportionallyUpOrDown
+        self.addSubview(imageView)
+
+        // Configure visualEffectView
+        visualEffectView.frame = self.bounds
+        visualEffectView.autoresizingMask = [.width, .height]
+        visualEffectView.blendingMode = .behindWindow
+        visualEffectView.material = .hudWindow
+        visualEffectView.state = .active
+        visualEffectView.alphaValue = 0.5
+        self.addSubview(visualEffectView)
 
         // Configure and add slider
         transparencySlider.target = self
@@ -22,12 +40,6 @@ class CustomView: NSView {
         imageButton.action = #selector(openImagePicker)
         imageButton.frame = CGRect(x: 20, y: 60, width: 100, height: 30)
         self.addSubview(imageButton)
-
-        // Configure and add image view
-        imageView.frame = self.bounds
-        imageView.autoresizingMask = [.width, .height]
-        imageView.imageScaling = .scaleProportionallyUpOrDown
-        self.addSubview(imageView)
     }
 
     @objc func sliderValueChanged(_ sender: NSSlider) {
@@ -42,11 +54,28 @@ class CustomView: NSView {
         dialog.allowedFileTypes = ["png", "jpg", "jpeg"]
 
         if dialog.runModal() == .OK {
-            if let result = dialog.url {
-                let image = NSImage(contentsOf: result)
+            if let result = dialog.url, let image = NSImage(contentsOf: result) {
                 imageView.image = image
+                resizeWindowForImage(image)
+                visualEffectView.alphaValue = 0
             }
         }
+    }
+
+    private func resizeWindowForImage(_ image: NSImage) {
+        guard let window = self.window else { return }
+        
+        let imageSize = image.size
+        let newWidth = max(imageSize.width, minWidth)
+        let newHeight = max(imageSize.height, minHeight)
+        let newSize = NSSize(width: newWidth, height: newHeight)
+        
+        var frame = window.frame
+        frame.size = newSize
+        window.setFrame(frame, display: true, animate: true)
+        
+        imageView.frame = self.bounds
+        visualEffectView.frame = self.bounds
     }
 
     override func mouseDown(with event: NSEvent) {
