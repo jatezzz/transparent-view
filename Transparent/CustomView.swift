@@ -14,14 +14,7 @@ class CustomView: NSView {
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
 
-        // Configure and add scroll view
-        scrollView.frame = self.bounds
-        scrollView.autoresizingMask = [.width, .height]
-        scrollView.hasVerticalScroller = true
-        scrollView.documentView = imageView
-        self.addSubview(scrollView)
-
-        // Configure and add visual effect view
+        // Configure and add visual effect view first
         visualEffectView.frame = self.bounds
         visualEffectView.autoresizingMask = [.width, .height]
         visualEffectView.blendingMode = .behindWindow
@@ -29,6 +22,13 @@ class CustomView: NSView {
         visualEffectView.state = .active
         visualEffectView.alphaValue = 0.5
         self.addSubview(visualEffectView)
+
+        // Configure and add scroll view
+        scrollView.frame = self.bounds
+        scrollView.autoresizingMask = [.width, .height]
+        scrollView.hasVerticalScroller = true
+        scrollView.documentView = imageView
+        self.addSubview(scrollView)
 
         // Configure and add slider
         transparencySlider.target = self
@@ -47,6 +47,7 @@ class CustomView: NSView {
     @objc func sliderValueChanged(_ sender: NSSlider) {
         let alphaValue = CGFloat(sender.doubleValue) / 100.0
         imageView.alphaValue = alphaValue
+        scrollView.alphaValue = alphaValue
     }
 
     @objc func openImagePicker() {
