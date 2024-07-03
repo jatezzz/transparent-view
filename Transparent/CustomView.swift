@@ -5,6 +5,7 @@ class CustomView: NSView {
     private let transparencySlider = NSSlider(value: 50, minValue: 0, maxValue: 100, target: nil, action: #selector(sliderValueChanged(_:)))
     private let imageView = NSImageView()
     private let imageButton = NSButton()
+    private let scrollView = NSScrollView()
     private var initialLocation: NSPoint?
 
     private let minWidth: CGFloat = 200.0
@@ -13,13 +14,14 @@ class CustomView: NSView {
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
 
-        // Configure and add image view first
-        imageView.frame = self.bounds
-        imageView.autoresizingMask = [.width, .height]
-        imageView.imageScaling = .scaleProportionallyUpOrDown
-        self.addSubview(imageView)
+        // Configure and add scroll view
+        scrollView.frame = self.bounds
+        scrollView.autoresizingMask = [.width, .height]
+        scrollView.hasVerticalScroller = true
+        scrollView.documentView = imageView
+        self.addSubview(scrollView)
 
-        // Configure visualEffectView
+        // Configure and add visual effect view
         visualEffectView.frame = self.bounds
         visualEffectView.autoresizingMask = [.width, .height]
         visualEffectView.blendingMode = .behindWindow
@@ -74,7 +76,8 @@ class CustomView: NSView {
         frame.size = newSize
         window.setFrame(frame, display: true, animate: true)
         
-        imageView.frame = self.bounds
+        scrollView.frame = self.bounds
+        imageView.frame = CGRect(origin: .zero, size: newSize)
         visualEffectView.frame = self.bounds
     }
 
