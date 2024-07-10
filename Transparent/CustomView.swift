@@ -54,6 +54,7 @@ class CustomView: NSView {
         let dialog = NSOpenPanel()
 
         dialog.title = "Choose an image"
+        
         dialog.allowedFileTypes = ["png", "jpg", "jpeg"]
 
         if dialog.runModal() == .OK {
@@ -79,6 +80,7 @@ class CustomView: NSView {
         
         scrollView.frame = self.bounds
         imageView.frame = CGRect(origin: .zero, size: newSize)
+        imageView.autoresizingMask = [.width]
         visualEffectView.frame = self.bounds
     }
 
